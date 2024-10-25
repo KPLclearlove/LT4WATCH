@@ -20,6 +20,6 @@ def get_reviews(series_id, page_num):
     koubei_url = 'https://k.m.autohome.com.cn/ajax/serieskoubei/getserieskoubeilistbytag'
     # 发送请求
     resp = requests.get(url=koubei_url, params=koubei_param)
-    with open('json模板.json', 'w', encoding='utf-8') as f:
+    with open('../config/json模板.json', 'w', encoding='utf-8') as f:
         f.write(resp.text)
 get_reviews(3411,1)

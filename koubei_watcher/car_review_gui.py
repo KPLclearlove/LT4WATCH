@@ -3,10 +3,10 @@
 import sys
 import os
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QTextEdit,
-                             QFileDialog, QListWidget, QListWidgetItem, QHBoxLayout, QMessageBox)
+                             QFileDialog, QListWidget, QListWidgetItem, QMessageBox)
 from PyQt5.QtCore import Qt
-from car_review_scraper import CarReviewScraper
-from series_code import Series
+from koubei_watcher.apps.car_review_scraper import CarReviewScraper
+from koubei_watcher.apps.series_list_scraper import Series
 
 
 class CarReviewApp(QWidget):

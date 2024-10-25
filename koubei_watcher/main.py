@@ -1,5 +1,5 @@
-from car_review_scraper import CarReviewScraper
-from series_code import Series
+from koubei_watcher.apps.car_review_scraper import CarReviewScraper
+from koubei_watcher.apps.series_list_scraper import Series
 
 def main():
 
