@@ -62,29 +62,26 @@ writer.writerow([feeling_summary, bought_date_formatted, bought_city, ownership_
 
 
 ## main：
-详情见运行后内容
+>详情见运行后内容
 品牌的brandid请参考
-https://www.autohome.com.cn/price/brandid_1
+https://www.autohome.com.cn/price/brandid_1 \
 比如这个链接中大众的id就是1
 而车型的seriesid
 https://www.autohome.com.cn/496/#pvareaid=6861421
 这其中迈腾的id就是496
-其他车型也是如此
-
-几个存在的问题：
+其他车型也是如此\
+几个存在的问题：\
 ①网站并没有对汽车能源形式严格分类
-只对驱动形式进行了分类
+只对驱动形式进行了分类\
 即便是能上绿牌的混动车也返回的是燃油车
 而增程车返回的竟然都是电车
-所以我只对驱动形式上进行了分类输出
-
+所以我只对驱动形式上进行了分类输出\
 ②部分汽车品牌由于其拥有多个生产厂商
 获取数据时并不会将他们分开
 
 ## 开发中
-①二手车数据
-②口碑评论详细页数据（具体方面的评论（如油耗评论，车主实拍照片
-，口碑tag
-③车型口碑总体评分数据
+①二手车数据\
+②口碑评论详细页数据（具体方面的评论（如油耗评论，车主实拍照片 ，口碑tag\
+③车型口碑总体评分数据\
 更新请见
 https://github.com/KPLclearlove/LT4WATCH
