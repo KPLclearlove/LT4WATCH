@@ -1,5 +1,8 @@
 import requests
 
+
+
+
 def get_reviews(series_id, page_num):
     """
     获取指定车系的评论数据
@@ -20,6 +23,11 @@ def get_reviews(series_id, page_num):
     koubei_url = 'https://k.m.autohome.com.cn/ajax/serieskoubei/getserieskoubeilistbytag'
     # 发送请求
     resp = requests.get(url=koubei_url, params=koubei_param)
-    with open('../config/json模板.json', 'w', encoding='utf-8') as f:
-        f.write(resp.text)
+    data = resp.json()
+    reviews = data['result']['list']
+    for review in reviews:
+        a = reviews[0].get('purposes', '') if reviews else ''
+        print(a)
+    #with open('../config/json模板.json', 'w', encoding='utf-8') as f:
+      # f.write(resp.text)
 get_reviews(3411,1)

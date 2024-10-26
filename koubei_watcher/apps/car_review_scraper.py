@@ -82,22 +82,52 @@ class CarReviewScraper:
 
             # 遍历评论数据，提取需要的信息并写入
             for review in reviews:
-                feeling_summary = review.get('feeling_summary', '')
-                bought_date_str = review.get('bought_date', '')
-                bought_city = review.get('boughtCityName', '')
-                ownership_period = review.get('carOwnershipPeriod', '')
-                created_str = review.get('created', '')
+                """
+                主要为主观感受数据
+                """
+                feeling_summary = review.get('feeling_summary', '')#评论标题
+                bought_date_str = review.get('bought_date', '')#购买日期
+                bought_city = review.get('boughtCityName', '')#购买城市
+                ownership_period = review.get('carOwnershipPeriod', '')#用车时间
+                created_str = review.get('created', '')#发帖日期
 
                 # 转换日期格式
                 bought_date_formatted = self.format_date(bought_date_str, '%Y年%m月')
                 created_formatted = self.format_date(created_str, '%Y-%m-%d %H:%M:%S')
 
-                best = review.get('best', '')
-                worst = review.get('worst', '')
+                best = review.get('best', '')#最满意
+                worst = review.get('worst', '')#最不满意
 
                 # 移除 "【最满意】" 和 "【最不满意】" 的前缀
                 best = review.get('best', '').replace("【最满意】", "").strip()
                 worst = review.get('worst', '').replace("【最不满意】", "").strip()
+
+                helpfulCount = review.get('helpfulCount','')
+                visitCount = review.get('visitCount','')
+                purpose_list = []
+                purposes = review.get('purposes', [])  # 获取目的列表
+                for purpose in purposes:
+                    purpose_name = purpose.get('name', '')
+                    if purpose_name:
+                        purpose_list.append(purpose_name)  # 将目的名称添加到 purpose_list 中
+
+                '''
+                汽车本身的数据
+                '''
+                actual_battery_consumption = review.get('actual_battery_consumption','')#电耗
+                actual_oil_consumption = review.get('actual_oil_consumption','')#油耗
+
+                apperance = review.get('apperance','')#外观得分
+                consumption =  review.get('consumption','')#耗能得分
+                cost_efficient = review.get('cost_efficient','')#性价比得分
+                interior = review.get('interior','')#内饰得分
+                power = review.get('power','')#动力得分
+                space = review.get('space','')#空间得分
+
+                driven_kilometers = review.get('driven_kilometers','')#行驶里程
+                price = review.get('price','')#价格（官方指导价，一般都比这个低）
+                specName = review.get('specName','')#车型配置
+
 
                 # 写入一行数据
                 writer.writerow([feeling_summary, bought_date_formatted, bought_city, ownership_period,

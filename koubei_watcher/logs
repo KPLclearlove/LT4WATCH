@@ -1,0 +1,12 @@
+更新日志：
+2024.10.26:
+在save_reviews_to_csv方法中增加了{电耗，油耗，各种得分，行驶里程，价格，点赞数，浏览量，用车目的，车型配置}
+如需添加这些数据进入表格请修改
+            # 如果文件不存在，写入表头
+            if not file_exists:
+                writer.writerow(
+                    ['Feeling Summary', 'Bought Date', 'Bought City', 'Ownership Period', 'Created', 'Best', 'Worst'])
+与
+            # 写入一行数据
+            writer.writerow([feeling_summary, bought_date_formatted, bought_city, ownership_period,
+                             created_formatted, best, worst])
