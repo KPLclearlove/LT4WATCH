@@ -78,60 +78,61 @@ class CarReviewScraper:
             # 如果文件不存在，写入表头
             if not file_exists:
                 writer.writerow(
-                    ['Feeling Summary', 'Bought Date', 'Bought City', 'Ownership Period', 'Created', 'Best', 'Worst'])
+                    ['Feeling Summary', 'Bought Date', 'Bought City', 'Ownership Period', 'Created', 'Best', 'Worst',
+                     'Helpful Count', 'Visit Count', 'Purposes', 'Actual Battery Consumption', 'Actual Oil Consumption',
+                     'Apperance Score', 'Consumption Score', 'Cost Efficiency Score', 'Interior Score', 'Power Score',
+                     'Space Score', 'Driven Kilometers', 'Price', 'Specification Name'])
 
             # 遍历评论数据，提取需要的信息并写入
             for review in reviews:
                 """
                 主要为主观感受数据
                 """
-                feeling_summary = review.get('feeling_summary', '')#评论标题
-                bought_date_str = review.get('bought_date', '')#购买日期
-                bought_city = review.get('boughtCityName', '')#购买城市
-                ownership_period = review.get('carOwnershipPeriod', '')#用车时间
-                created_str = review.get('created', '')#发帖日期
+                feeling_summary = review.get('feeling_summary', '')  # 评论标题
+                bought_date_str = review.get('bought_date', '')  # 购买日期
+                bought_city = review.get('boughtCityName', '')  # 购买城市
+                ownership_period = review.get('carOwnershipPeriod', '')  # 用车时间
+                created_str = review.get('created', '')  # 发帖日期
 
                 # 转换日期格式
                 bought_date_formatted = self.format_date(bought_date_str, '%Y年%m月')
                 created_formatted = self.format_date(created_str, '%Y-%m-%d %H:%M:%S')
 
-                best = review.get('best', '')#最满意
-                worst = review.get('worst', '')#最不满意
+                best = review.get('best', '').replace("【最满意】", "").strip()  # 最满意
+                worst = review.get('worst', '').replace("【最不满意】", "").strip()  # 最不满意
 
-                # 移除 "【最满意】" 和 "【最不满意】" 的前缀
-                best = review.get('best', '').replace("【最满意】", "").strip()
-                worst = review.get('worst', '').replace("【最不满意】", "").strip()
-
-                helpfulCount = review.get('helpfulCount','')
-                visitCount = review.get('visitCount','')
+                helpful_count = review.get('helpfulCount', '')  # 点赞数
+                visit_count = review.get('visitCount', '')  # 浏览次数
                 purpose_list = []
                 purposes = review.get('purposes', [])  # 获取目的列表
                 for purpose in purposes:
                     purpose_name = purpose.get('name', '')
                     if purpose_name:
                         purpose_list.append(purpose_name)  # 将目的名称添加到 purpose_list 中
+                purposes_str = ', '.join(purpose_list)  # 目的列表转换为字符串
 
                 '''
                 汽车本身的数据
                 '''
-                actual_battery_consumption = review.get('actual_battery_consumption','')#电耗
-                actual_oil_consumption = review.get('actual_oil_consumption','')#油耗
+                actual_battery_consumption = review.get('actual_battery_consumption', '')  # 电耗
+                actual_oil_consumption = review.get('actual_oil_consumption', '')  # 油耗
 
-                apperance = review.get('apperance','')#外观得分
-                consumption =  review.get('consumption','')#耗能得分
-                cost_efficient = review.get('cost_efficient','')#性价比得分
-                interior = review.get('interior','')#内饰得分
-                power = review.get('power','')#动力得分
-                space = review.get('space','')#空间得分
+                apperance = review.get('apperance', '')  # 外观得分
+                consumption = review.get('consumption', '')  # 耗能得分
+                cost_efficient = review.get('cost_efficient', '')  # 性价比得分
+                interior = review.get('interior', '')  # 内饰得分
+                power = review.get('power', '')  # 动力得分
+                space = review.get('space', '')  # 空间得分
 
-                driven_kilometers = review.get('driven_kilometers','')#行驶里程
-                price = review.get('price','')#价格（官方指导价，一般都比这个低）
-                specName = review.get('specName','')#车型配置
-
+                driven_kilometers = review.get('driven_kilometers', '')  # 行驶里程
+                price = review.get('price', '')  # 价格（官方指导价，一般都比这个低）
+                spec_name = review.get('specName', '')  # 车型配置
 
                 # 写入一行数据
                 writer.writerow([feeling_summary, bought_date_formatted, bought_city, ownership_period,
-                                 created_formatted, best, worst])
+                                 created_formatted, best, worst, helpful_count, visit_count, purposes_str,
+                                 actual_battery_consumption, actual_oil_consumption, apperance, consumption,
+                                 cost_efficient, interior, power, space, driven_kilometers, price, spec_name])
 
     def format_date(self, date_str, format_str):
         """
