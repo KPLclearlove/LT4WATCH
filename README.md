@@ -50,7 +50,7 @@ writer.writerow([feeling_summary, bought_date_formatted, bought_city, ownership_
 
 ## series_code:
 ### 功能：
-	获得汽车品牌下各个型号的id
+>获得汽车品牌下各个型号的id
 	即branid下的serieslist
 	可以返回serieslist中的全部数据或者具体某一条数据
 	本质是另一个request
