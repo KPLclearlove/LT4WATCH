@@ -179,3 +179,4 @@ class CarReviewScraper:
                 # 每页处理完后显示当前页数的进度
                 tqdm.write(f"第{page_num}页已完成")
                 page_num += 1
+
