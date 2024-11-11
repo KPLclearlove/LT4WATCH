@@ -82,7 +82,10 @@ class CarReviewScraper:
                      'Helpful Count', 'Visit Count', 'Purposes', 'Actual Battery Consumption', 'Actual Oil Consumption',
                      'Apperance Score', 'Consumption Score', 'Cost Efficiency Score', 'Interior Score', 'Power Score',
                      'Space Score', 'Driven Kilometers', 'Price', 'Specification Name'])
-
+                '''
+                writer.writerow(
+                    ['Purposes'])
+                '''
             # 遍历评论数据，提取需要的信息并写入
             for review in reviews:
                 """
@@ -133,6 +136,10 @@ class CarReviewScraper:
                                  created_formatted, best, worst, helpful_count, visit_count, purposes_str,
                                  actual_battery_consumption, actual_oil_consumption, apperance, consumption,
                                  cost_efficient, interior, power, space, driven_kilometers, price, spec_name])
+                '''
+                if purposes_str != '':
+                    writer.writerow([purposes_str])
+                '''
 
     def format_date(self, date_str, format_str):
         """
