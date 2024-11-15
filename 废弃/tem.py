@@ -1,5 +1,5 @@
 
-import json
+
 import requests
 import re
 
@@ -27,8 +27,7 @@ while  repeat_detect == True:
     title_content_obj = re.compile(r'<div class="tz-paragraph">(.*?)</div>', re.S)#标题正文
     title_content = title_content_obj.findall(content)#
     if title_content:
-        title_content = [re.sub(r'<br>', '', item) for item in title_content]
-        title_contents = title_content[0]
+        title_contents = [re.sub(r'<br>', '', item) for item in title_content]
     '''
     获得所有评论以及他们的回复,每个评论会形成一个字典，键为评论，值为评论的回复
     '''
@@ -92,8 +91,8 @@ total_dict = {
     'content': title_contents,
     'replay': total_cr
 }
-with open('total_dict.json', 'w', encoding='utf-8-sig') as f:
-    json.dump(total_dict, f, ensure_ascii=False, indent=4)
+print(total_dict)
+
 
 
 
