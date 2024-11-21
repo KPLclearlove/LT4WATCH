@@ -1,10 +1,10 @@
 import requests
 import re
 import json
-
-from 废弃.tem import comments, topic_id
-
-
+import pickle
+import time
+import random
+import os
 class Forum:
 
     def __init__(self, series_id):
@@ -33,13 +33,13 @@ class Forum:
                 if comments:
                     for comment in comments:
                         comments_list.append(comment['biz_id'])
+                    print('第', pageNum, '页')
                     pageNum += 1
                     total_list.append(comments_list)
-                print(total_list)
             except:
                 flag = False
-
-        return  comments_list
+                print('已获取全部')
+        return  total_list
 
     def get_comments(self):
         comment_list = self.get_comment_series()
@@ -49,7 +49,7 @@ class Forum:
         }
         for comment_id in comment_list:
             url = f'https://club.autohome.com.cn/bbs/thread//{comment_id}-1.html'
-            resp = requests.get(url, headers=header)
+            resp = requests.get(url, headers=header, timeout=5)
             content = resp.text
             title_obj = re.compile(r"<title>汽车之家\|(.*?)\|", re.S)
             title = title_obj.search(content)
@@ -63,6 +63,7 @@ class Forum:
         repeat_list2 = []  # 过去
         repeat_detect = True
         html_page = 1
+        title_contents = None
         while repeat_detect == True:
 
             url = f'https://club.autohome.com.cn/bbs/thread//{topic_id}-{html_page}.html'
@@ -70,17 +71,20 @@ class Forum:
                 "user-agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36 Edg/130.0.0.0"
             }
 
-            html_resp = requests.get(url, headers=header)
-            content = html_resp.text
-
+            try:
+                html_resp = requests.get(url, headers=header)
+                content = html_resp.text
+            except json.JSONDecodeError:
+                continue
             title_obj = re.compile(r"<title>汽车之家\|(.*?)\|", re.S)  # 标题
             title = title_obj.search(content)
-            title = title.group(1)
-            title_content_obj = re.compile(r'<div class="tz-paragraph">(.*?)</div>', re.S)  # 标题正文
-            title_content = title_content_obj.findall(content)  #
-            if title_content:
-                title_content = [re.sub(r'<br>', '', item) for item in title_content]
-                title_contents = title_content[0]
+            if title:
+                title = title.group(1)
+                title_content_obj = re.compile(r'<div class="tz-paragraph">(.*?)</div>', re.S)  # 标题正文
+                title_content = title_content_obj.findall(content)
+                if title_content:
+                    title_content = [re.sub(r'<br>', '', item) for item in title_content]
+                    title_contents = title_content[0]
             '''
             获得所有评论以及他们的回复,每个评论会形成一个字典，键为评论，值为评论的回复
             '''
@@ -122,8 +126,11 @@ class Forum:
             header = {
                 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0'
             }
-            reply_resp = requests.get(url, params=param)
-            reply_json = reply_resp.json()
+            try:
+                reply_resp = requests.get(url, params=param)
+                reply_json = reply_resp.json()
+            except  json.JSONDecodeError:
+                continue
             reply_list = []
             replies_list = []
             for comment in reply_json['result']:
@@ -132,24 +139,37 @@ class Forum:
                     detect = 0
                     reply_list_list = []
                     for reply in reply_list:
-                        reply_list_list.append(reply['content'][0]['content'])
-
-                    reply_list.append(reply_list_list)
+                        if reply['content'] is not None:
+                            reply_list_list.append(reply['content'][0]['content'])
                     replies_list.append(reply_list_list)
 
             cr_dict = dict(zip(cleaned_comments, replies_list))
             total_cr.update(cr_dict)
             html_page = html_page + 1
+            html_resp.close()
         total_dict = {
             'title': title,
             'content': title_contents,
             'replay': total_cr
         }
-        with open( f'{series_id}-{topic_id}.txt', 'w', encoding='utf-8-sig') as f:
+        with open( f'{series_id}-{topic_id}.json', 'w', encoding='utf-8-sig') as f:
             json.dump(total_dict, f, ensure_ascii=False, indent=4)
 
 if __name__ == '__main__':
     car = Forum(series_id = 3207 )
-    topic_id = car.get_comment_series()
+    with open('topic_id.pkl', 'rb') as f:
+        topic_id = pickle.load(f)
     for i in topic_id:
-        car.get_all(topic_id = i)
+        for j in i:
+            file_path = f'{car.series_id}-{j}.json'
+            # 如果文件已存在，则跳过该 topic_id
+            if os.path.exists(file_path):
+                print(f"{j} 已存在，跳过")
+                continue
+            else:
+                print(j,'已完成')
+                car.get_all(topic_id = j )
+                time.sleep(random.randrange(3, 8))
+
+
+

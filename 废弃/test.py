@@ -10,7 +10,9 @@ repeat_list1 = []#现在
 repeat_list2 = []#过去
 repeat_detect = True
 html_page = 1
-topic_id = 109542656
+topic_id = 107817225
+title = None
+title_contents = None
 while  repeat_detect == True:
 
     url  = f'https://club.autohome.com.cn/bbs/thread//{topic_id}-{html_page}.html'
@@ -21,14 +23,16 @@ while  repeat_detect == True:
     html_resp = requests.get(url, headers= header)
     content = html_resp.text
 
+
     title_obj = re.compile(r"<title>汽车之家\|(.*?)\|", re.S)#标题
     title = title_obj.search(content)
-    title = title.group(1)
-    title_content_obj = re.compile(r'<div class="tz-paragraph">(.*?)</div>', re.S)#标题正文
-    title_content = title_content_obj.findall(content)#
-    if title_content:
-        title_content = [re.sub(r'<br>', '', item) for item in title_content]
-        title_contents = title_content[0]
+    if title:
+        title = title.group(1)
+        title_content_obj = re.compile(r'<div class="tz-paragraph">(.*?)</div>', re.S)#标题正文
+        title_content = title_content_obj.findall(content)
+        if title_content:
+            title_content = [re.sub(r'<br>', '', item) for item in title_content]
+            title_contents = title_content[0]
     '''
     获得所有评论以及他们的回复,每个评论会形成一个字典，键为评论，值为评论的回复
     '''
@@ -37,10 +41,12 @@ while  repeat_detect == True:
         re.S
     )
     comments = comment_obj.findall(content)
+
     repeat_list1 = comments
     if repeat_list1 == repeat_list2:
         repeat_detect = False
         break
+
     repeat_list2 =repeat_list1
     cleaned_comments = []
     for comment in comments:
@@ -79,10 +85,10 @@ while  repeat_detect == True:
             detect = 0
             reply_list_list = []
             for reply in reply_list:
-                reply_list_list.append(reply['content'][0]['content'])
-
-            reply_list.append(reply_list_list)
+                if reply['content'] is not None:
+                    reply_list_list.append(reply['content'][0]['content'])
             replies_list.append(reply_list_list)
+
 
     cr_dict = dict(zip(cleaned_comments, replies_list))
     total_cr.update(cr_dict)
@@ -92,8 +98,10 @@ total_dict = {
     'content': title_contents,
     'replay': total_cr
 }
-with open('total_dict.json', 'w', encoding='utf-8-sig') as f:
-    json.dump(total_dict, f, ensure_ascii=False, indent=4)
+print(total_dict)
+if total_cr != {}:
+    with open('total_dict.json', 'w', encoding='utf-8-sig') as f:
+        json.dump(total_dict, f, ensure_ascii=False, indent=4)
 
 
 
