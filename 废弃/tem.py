@@ -10,7 +10,7 @@ repeat_list1 = []#现在
 repeat_list2 = []#过去
 repeat_detect = True
 html_page = 1
-topic_id = 109542656
+topic_id = 80084945
 while  repeat_detect == True:
 
     url  = f'https://club.autohome.com.cn/bbs/thread//{topic_id}-{html_page}.html'
@@ -26,6 +26,7 @@ while  repeat_detect == True:
     title = title.group(1)
     title_content_obj = re.compile(r'<div class="tz-paragraph">(.*?)</div>', re.S)#标题正文
     title_content = title_content_obj.findall(content)#
+    print(title_content)
     if title_content:
         title_contents = [re.sub(r'<br>', '', item) for item in title_content]
     '''
