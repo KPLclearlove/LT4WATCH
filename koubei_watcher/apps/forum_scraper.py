@@ -79,6 +79,7 @@ class Forum:
                 content = html_resp.text
             except json.JSONDecodeError:
                 continue
+
             if html_page == 1:
                 title_obj = re.compile(r"<title>汽车之家\|(.*?)\|", re.S)  # 标题
                 title = title_obj.search(content)
@@ -158,8 +159,7 @@ class Forum:
             'content': title_contents,
             'replay': total_cr
         }
-        with open( f'{series_id}-{topic_id}.json', 'w', encoding='utf-8-sig') as f:
-            json.dump(total_dict, f, ensure_ascii=False, indent=4)
+        return total_dict
 
     def gpt(self, data):
         api_url = 'http://localhost:3002/api/v1/chat/completions'  # 如果遇到404，可以试试去掉/v1
@@ -176,30 +176,43 @@ class Forum:
 
 
 if __name__ == '__main__':
-    car = Forum(series_id=3207)
-
+    series_id = 3207
+    car = Forum(series_id=series_id)
+    # 指定保存目录
+    output_dir = r'F:\The Comments Watcher\The Comments Watcher\koubei_watcher\data\atsl' # 你可以修改为你想要的目录名
     with open('topic_id.pkl', 'rb') as f:
         topic_id = pickle.load(f)
-
+    print(topic_id)
     for i in topic_id:
         for j in i:
             # 定义输出文件的完整路径
-            file_path = os.path.join( f'{car.series_id}-{j}.json')
-
+            file_path = os.path.join(output_dir,f'{car.series_id}-{j}.json')
             # 如果文件已存在，则跳过该 topic_id
             if os.path.exists(file_path):
                 print(f"{j} 已存在，跳过")
                 continue
             else:
                 print(f"{j} 已完成")
-                car.get_all(topic_id=j)  # 调用 car.get_all 方法
+                detect = False
+                while detect == False:
+                    try:
+                        total_dict = car.get_all(topic_id=j)  # 调用 car.get_all 方法
+                        detect = True
+                    except:
+                        print(f"获取{j}数据失败,重试中")
+                if total_dict is not None: #在保存之前检查数据是否为空
+                    with open(file_path, 'w', encoding='utf-8-sig') as f:
+                        json.dump(total_dict, f, ensure_ascii=False, indent=4)
+                    print(f"{j} 已完成，保存到：{file_path}")
+                else:
+                     print(f"获取{j}数据失败")
                 # 假设 car.get_all 会保存数据为 json 文件，确保它写入 file_path
                 time.sleep(random.randrange(3, 8))
 '''
-if __name__ == '__main__':
+if __name__ == '__main__':AIzaSyC9kZLmvHEu7Z4LxUutwn3B1XWFqbuJ-hM
     # 创建输出文件（如果尚未存在）
     num = 1
-    with open('book.txt', 'w', encoding='utf-8-sig') as f:
+    with open('cartest.txt', 'w', encoding='utf-8-sig') as f:
         pass  # 如果只需要打开文件并确认其存在，则可以只写这一行
     for filename in os.listdir('F:/The Comments Watcher/The Comments Watcher/koubei_watcher/data/atsl/apps'):
         if num<=2792:
@@ -219,8 +232,9 @@ if __name__ == '__main__':
             processed_data = car.gpt(data)
 
             # 将处理后的数据写入输出文件，确保每条数据之间有换行符
-            with open('book.txt', 'a', encoding='utf-8-sig') as f:
+            with open('cartest.txt', 'a', encoding='utf-8-sig') as f:
                 f.write(processed_data + '\n')
             print(num)
             num += 1#2792
+            
 '''
